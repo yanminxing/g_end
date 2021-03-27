@@ -1,0 +1,114 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('gweimai-server:server');
+var http = require('http');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '5000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+var qs = require('querystring');
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+/*后台cors跨域*/
+server.listen(port);
+/*server.on("request", function (req, res) {
+ /!* var postData = '';
+  // 数据块接收中
+  req.addListener('data', function(chunk) {
+    postData += chunk;
+  });
+*!/
+  // 数据接收完毕
+  req.addListener('end', function() {
+    //postData = qs.parse(postData);
+    // 跨域后台设置
+    res.writeHead(200, {
+      'Access-Control-Allow-Credentials': 'true',     // 后端允许发送Cookie
+      'Access-Control-Allow-Origin': "http://192.168.0.102:8082",    // 允许访问的域（协议+域名+端口）
+      /!*
+       * 此处设置的cookie还是domain2的而非domain1(domain2/domain1两个网页的请求地址)，因为后端也不能跨域写cookie(nginx反向代理可以实现)，
+       * 但只要domain2中写入一次cookie认证，后面的跨域接口都能从domain2中获取cookie，从而实现所有的接口都能跨域访问
+       *!/
+      'Access-Control-Allow-Methods': 'PUT,POST,GET,DELETE,OPTIONS',
+      //'Access-Control-Allow-Headers': 'Content-Type,Content-Length, Authorization, Accept,X-Requested-With,application/x-www-form-urlencoded'
+    });
+    //res.write(JSON.stringify(postData));
+    res.end();
+  });
+});*/
+server.on('error', onError);
+server.on('listening', onListening);
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
